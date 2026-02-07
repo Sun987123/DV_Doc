@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  	<link rel="manifest" href="manifest.json">
-		<meta name="theme-color" content="#1e1e2e">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DocuTrack Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; user-select: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; user-select: none; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
@@ -25,84 +23,35 @@
         .chevron { transition: transform 0.3s; }
         .chevron.rotate { transform: rotate(90deg); }
 
-        /* Edit Mode Styles */
-        .edit-controls { display: none; }
-        .app-editing .edit-controls { display: flex; }
+        /* --- FIX: Edit Mode Styles (Added !important) --- */
+        .edit-controls { display: none !important; } /* Defaut Hidden */
+        .app-editing .edit-controls { display: flex !important; } /* Show only when active */
+        
         .app-editing .q-card { border: 2px dashed #94a3b8; background: #f1f5f9; }
         .app-editing .card-main-click { pointer-events: none; } 
         
-        /* --- PRINT STYLES (Smart Layout) --- */
+        /* --- PRINT STYLES --- */
         @media print {
-            /* Hide UI Elements */
             #fab-btn, #top-bar, #login-screen, #add-modal, .edit-controls, .no-print, .chevron { display: none !important; }
-            
-            /* Page Reset */
             body { background: white; color: black; font-size: 11pt; }
             #questions-list { padding: 0; overflow: visible; height: auto; }
-            
-            /* Show Print Header */
             #print-header { display: block !important; }
 
-            /* Compact List Layout */
             .q-card {
-                border: none;
-                border-bottom: 1px solid #ccc;
-                box-shadow: none;
-                margin-bottom: 5px;
-                padding: 10px 0;
-                break-inside: avoid;
-                
-                /* Layout: Side by Side */
-                display: flex;
-                flex-direction: row;
-                align-items: center;
+                border: none; border-bottom: 1px solid #ccc; box-shadow: none; margin-bottom: 5px; padding: 10px 0;
+                break-inside: avoid; display: flex; flex-direction: row; align-items: center;
             }
-
-            /* Left Side: Name */
-            .card-main-click {
-                width: 35%; /* Name width */
-                padding: 0 !important;
-                border: none;
-            }
+            .card-main-click { width: 35%; padding: 0 !important; border: none; }
             .card-main-click h3 { font-size: 12pt; font-weight: bold; color: #000; }
-            /* Hide Progress Bar & Icons in Print */
             .card-main-click .absolute, .card-main-click .shrink-0, .card-main-click .w-5 { display: none !important; }
-
-            /* Right Side: Steps */
             .step-body {
-                display: block !important;
-                max-height: none !important;
-                opacity: 1 !important;
-                padding: 0 0 0 20px !important;
-                width: 65%; /* Steps width */
-                margin-top: 0 !important;
-                border: none !important;
+                display: block !important; max-height: none !important; opacity: 1 !important;
+                padding: 0 0 0 20px !important; width: 65%; margin-top: 0 !important; border: none !important;
             }
-
-            /* Flow Steps nicely */
-            .step-body .grid {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-
-            /* Checkbox Clean Look */
-            .step-body label {
-                border: none !important;
-                background: none !important;
-                padding: 0 !important;
-                margin: 0;
-            }
-            .step-body input[type="checkbox"] {
-                appearance: auto !important; /* Use real checkboxes for printing */
-                width: 14px; height: 14px;
-                margin-right: 5px;
-            }
-            .step-body span {
-                color: #000 !important;
-                font-size: 10pt;
-                text-decoration: none !important; /* No strike-through on print so text is readable */
-            }
+            .step-body .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+            .step-body label { border: none !important; background: none !important; padding: 0 !important; margin: 0; }
+            .step-body input[type="checkbox"] { appearance: auto !important; width: 14px; height: 14px; margin-right: 5px; }
+            .step-body span { color: #000 !important; font-size: 10pt; text-decoration: none !important; }
         }
 
         .loader { border: 3px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
@@ -112,11 +61,13 @@
 <body class="h-screen w-full flex flex-col overflow-hidden text-slate-800">
 
     <div id="login-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
-        <div class="bg-slate-50 p-6 rounded-xl shadow-lg text-center border border-slate-200">
+        <div class="bg-slate-50 p-6 rounded-xl shadow-lg text-center border border-slate-200 w-full max-w-xs">
             <h1 class="text-2xl font-bold mb-1 text-slate-800">DocuTrack</h1>
-            <button onclick="googleLogin()" class="mt-4 w-full bg-slate-800 text-white py-2 px-4 rounded-lg text-sm flex items-center justify-center hover:bg-slate-900">
+            <p class="text-xs text-slate-400 mb-6">Secure Checklist Manager</p>
+            <button onclick="googleLogin()" class="w-full bg-slate-800 text-white py-3 px-4 rounded-lg text-sm flex items-center justify-center hover:bg-slate-900 shadow-md active:scale-95 transition">
                 <i class="fa-brands fa-google mr-2"></i> Login with Google
             </button>
+            <p id="login-error" class="text-red-500 text-[10px] mt-2 hidden"></p>
         </div>
     </div>
 
@@ -216,21 +167,39 @@
         let globalStepPool = [];
         let selectedPoolIndices = [];
 
-        // Set Print Date
         document.getElementById('print-date').innerText = "Generated on: " + new Date().toLocaleString();
 
+        // --- AUTH LOGIC UPDATED ---
         auth.onAuthStateChanged(user => {
+            const loginScreen = document.getElementById('login-screen');
             if (user) {
                 currentUser = user;
-                document.getElementById('login-screen').classList.add('hidden');
+                loginScreen.classList.add('hidden'); // Force Hide
                 loadQuestions();
                 loadGlobalStepPool();
             } else {
-                document.getElementById('login-screen').classList.remove('hidden');
+                loginScreen.classList.remove('hidden');
             }
         });
 
-        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        // Robust Login for Android
+        function googleLogin() {
+            const errorMsg = document.getElementById('login-error');
+            errorMsg.classList.add('hidden');
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            // Try standard popup
+            auth.signInWithPopup(provider).catch((error) => {
+                console.error("Login Failed:", error);
+                
+                // If popup failed/closed by user/blocked
+                errorMsg.innerText = "Error: " + error.message;
+                errorMsg.classList.remove('hidden');
+                alert("Login Error: " + error.message);
+            });
+        }
+
         function logout() { auth.signOut(); }
 
         // --- Edit Mode ---
@@ -240,7 +209,7 @@
             const status = document.getElementById('edit-status');
             if (isEditMode) {
                 body.classList.add('app-editing');
-                status.innerText = "Editing Active";
+                status.innerText = "Editing Active (Tap to Stop)";
                 status.classList.add('text-blue-600', 'font-bold');
             } else {
                 body.classList.remove('app-editing');
@@ -411,7 +380,7 @@
                 const cardClass = allDone ? 'bg-green-50 border-green-400' : 'bg-white border-slate-200';
                 const icon = allDone ? '<i class="fa-solid fa-circle-check text-green-500 text-lg"></i>' : `<div class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full">${completedSteps}/${totalSteps}</div>`;
 
-                // Edit Controls
+                // Edit Controls (Hidden unless .app-editing exists via CSS)
                 const isFirst = index === 0;
                 const isLast = index === data.length - 1;
                 const editControls = `
@@ -468,8 +437,5 @@
             db.ref().update(updates);
         }
     </script>
-  <script>
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
-</script>
 </body>
 </html>
