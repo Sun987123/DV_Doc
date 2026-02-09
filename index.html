@@ -14,136 +14,168 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; user-select: none; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        /* Accordion Animation */
-        .step-body { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease-in-out; }
-        .step-body.open { max-height: 1000px; opacity: 1; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
-        .chevron { transition: transform 0.3s; }
+        .step-body { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.25s ease-in-out; }
+        .step-body.open { max-height: 1000px; opacity: 1; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; }
+        .chevron { transition: transform 0.2s; }
         .chevron.rotate { transform: rotate(90deg); }
 
-        /* --- FIX: Edit Mode Styles --- */
         .edit-controls { display: none !important; } 
         .app-editing .edit-controls { display: flex !important; } 
-        .app-editing .q-card { border: 2px dashed #94a3b8; background: #f1f5f9; }
-        .app-editing .card-main-click { pointer-events: none; } 
         
-        /* --- PRINT STYLES --- */
-        @media print {
-            #fab-btn, #top-bar, #login-screen, #add-modal, .edit-controls, .no-print, .chevron { display: none !important; }
-            body { background: white; color: black; font-size: 11pt; }
-            #questions-list { padding: 0; overflow: visible; height: auto; }
-            #print-header { display: block !important; }
+        .app-editing .q-card { border: 2px dashed #94a3b8; }
+        
+        /* Edit Mode Special Styles */
+        .app-editing .step-check-view { display: none; }
+        .app-editing .step-edit-view { display: block !important; }
+        .step-edit-view { display: none; }
 
+        .glass-btn { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); border: 1px solid rgba(200,200,200,0.5); }
+        
+        /* --- PREMIUM PRINT STYLES --- */
+        @media print {
+            @page { margin: 1.5cm; size: A4; }
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            #fab-btn, #top-bar, #login-screen, #add-modal, .edit-controls, .no-print, .pill-badge, .card-main-click .absolute { display: none !important; }
+            
+            #print-header { display: block !important; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+            #questions-list { padding: 0; overflow: visible; display: block; }
+            
             .q-card {
-                border: none; border-bottom: 1px solid #ccc; box-shadow: none; margin-bottom: 5px; padding: 10px 0;
-                break-inside: avoid; display: flex; flex-direction: row; align-items: center;
+                break-inside: avoid; border: 1px solid #e2e8f0; border-radius: 8px; 
+                margin-bottom: 15px; padding: 15px; box-shadow: none; background: #fff;
             }
-            .card-main-click { width: 35%; padding: 0 !important; border: none; }
-            .card-main-click h3 { font-size: 12pt; font-weight: bold; color: #000; }
-            .card-main-click .absolute, .card-main-click .shrink-0, .card-main-click .w-5 { display: none !important; }
-            .step-body {
-                display: block !important; max-height: none !important; opacity: 1 !important;
-                padding: 0 0 0 20px !important; width: 65%; margin-top: 0 !important; border: none !important;
+            
+            .card-main-click { padding: 0 0 10px 0 !important; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+            .card-main-click h3 { font-size: 14pt; font-weight: bold; color: #000; }
+            .card-main-click .chevron, .card-main-click .w-6 { display: none !important; }
+            
+            .print-status { display: block !important; font-size: 10pt; font-weight: bold; }
+
+            .step-body { 
+                display: block !important; max-height: none !important; opacity: 1 !important; 
+                margin-top: 10px !important; border: none !important; padding: 0 !important; 
             }
-            .step-body .grid { display: flex; flex-wrap: wrap; gap: 15px; }
-            .step-body label { border: none !important; background: none !important; padding: 0 !important; margin: 0; }
-            .step-body input[type="checkbox"] { appearance: auto !important; width: 14px; height: 14px; margin-right: 5px; }
-            .step-body span { color: #000 !important; font-size: 10pt; text-decoration: none !important; }
+            
+            .step-body .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+            .step-body label { 
+                border: 1px solid #cbd5e1 !important; border-radius: 50px !important; 
+                padding: 4px 12px !important; background: #f8fafc !important;
+                display: flex; align-items: center; margin: 0 !important; width: auto !important;
+            }
+            .step-body label input { display: none !important; }
+            .step-body label:has(input:checked) { background: #000 !important; border-color: #000 !important; color: #fff !important; }
+            .step-body label span { font-size: 9pt !important; text-decoration: none !important; font-weight: 600; }
+            .step-body label:has(input:checked) span::before { content: "✓ "; margin-right: 4px; }
+            
+            /* Hide Edit Views in Print */
+            .step-edit-view { display: none !important; }
+            .step-check-view { display: flex !important; }
         }
+        .print-status { display: none; }
 
         .loader { border: 3px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="h-screen w-full flex flex-col overflow-hidden text-slate-800">
+<body class="h-screen w-full flex flex-col overflow-hidden text-slate-800 bg-slate-50">
 
     <div id="login-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
-        <div class="bg-slate-50 p-6 rounded-xl shadow-lg border border-slate-200 w-full max-w-xs">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-bold text-slate-800">DocuTrack</h1>
-                <p class="text-xs text-slate-400">Secure Login</p>
+        <div class="bg-slate-50 p-6 rounded-2xl shadow-xl text-center border border-slate-100 w-full max-w-xs">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-200">
+                <i class="fa-solid fa-check-double text-white text-xl"></i>
             </div>
-
-            <form id="auth-form" onsubmit="handleLogin(event)" class="space-y-3">
-                <div>
-                    <input type="email" id="email" required placeholder="Email Address" 
-                        class="w-full text-sm p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <input type="password" id="password" required placeholder="Password" 
-                        class="w-full text-sm p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                </div>
-                
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg text-sm font-bold shadow-md transition">
-                    Login
-                </button>
-            </form>
-
-            <div class="mt-3 text-center">
-                <p class="text-[11px] text-slate-400">New user?</p>
-                <button onclick="handleRegister()" class="text-blue-600 text-xs font-bold hover:underline">Create Account</button>
-            </div>
-            
-            <p id="login-error" class="text-red-500 text-center text-[11px] mt-3 hidden bg-red-50 p-2 rounded border border-red-100"></p>
+            <h1 class="text-2xl font-bold mb-1 text-slate-800">DocuTrack</h1>
+            <p class="text-xs text-slate-400 mb-6">Smart Checklist Manager</p>
+            <button onclick="googleLogin()" class="w-full bg-slate-900 text-white py-3 px-4 rounded-xl text-sm flex items-center justify-center hover:bg-black shadow-lg active:scale-95 transition">
+                <i class="fa-brands fa-google mr-2"></i> Login with Google
+            </button>
+            <p id="login-error" class="text-red-500 text-[10px] mt-2 hidden"></p>
         </div>
     </div>
 
-    <div id="top-bar" class="bg-white border-b border-slate-200 px-4 py-3 shrink-0 flex justify-between items-center z-20 shadow-sm">
-        <div class="flex items-center cursor-pointer select-none group" onclick="toggleEditMode()" title="Tap to toggle Edit Mode">
-            <div class="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-2 shadow-sm group-hover:bg-blue-700 transition">
-                <i class="fa-solid fa-list-check"></i>
+    <div id="top-bar" class="bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-2 shrink-0 flex justify-between items-center z-20 shadow-sm sticky top-0">
+        <div class="flex items-center cursor-pointer select-none group" onclick="toggleEditMode()">
+            <div class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center mr-3 shadow-md shadow-blue-200 group-hover:bg-blue-700 transition">
+                <i class="fa-solid fa-bars-progress"></i>
             </div>
             <div>
-                <h1 class="font-bold text-slate-800 leading-tight">DocuTrack</h1>
-                <div id="edit-status" class="text-[10px] text-slate-400 font-medium">Tap here to Edit</div>
+                <h1 class="font-bold text-slate-800 text-sm leading-tight">My Documents</h1>
+                <div id="header-stats" class="text-[10px] text-slate-500 font-medium flex space-x-2 mt-0.5">
+                    <span>Loading...</span>
+                </div>
             </div>
         </div>
         
-        <div class="flex items-center space-x-2">
-            <span class="bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-500 border border-slate-200" id="total-count">0 Docs</span>
-            <button onclick="window.print()" class="text-slate-500 hover:text-blue-600 px-2 w-8 h-8 rounded hover:bg-slate-100 transition"><i class="fa-solid fa-print text-sm"></i></button>
-            <button onclick="logout()" class="text-slate-400 hover:text-red-500 px-2 transition"><i class="fa-solid fa-power-off"></i></button>
+        <div class="flex items-center space-x-1">
+            <button onclick="window.print()" class="text-slate-400 hover:text-blue-600 w-8 h-8 rounded-full hover:bg-slate-100 transition flex items-center justify-center">
+                <i class="fa-solid fa-print text-sm"></i>
+            </button>
+            <button onclick="logout()" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-red-50 transition flex items-center justify-center">
+                <i class="fa-solid fa-power-off text-sm"></i>
+            </button>
         </div>
     </div>
 
-    <div id="print-header" class="hidden p-5 border-b-2 border-black mb-5">
-        <h1 class="text-2xl font-bold text-black uppercase tracking-wide">Document Checklist Report</h1>
-        <p class="text-sm text-gray-600 mt-1" id="print-date"></p>
+    <div id="print-header" class="hidden">
+        <div class="flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-black tracking-tight">Checklist Report</h1>
+                <p class="text-sm text-gray-500 mt-1" id="print-date"></p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-gray-400 uppercase">Generated By</p>
+                <p class="font-bold text-black">DocuTrack Pro</p>
+            </div>
+        </div>
     </div>
 
-    <div id="questions-list" class="flex-1 overflow-y-auto p-3 space-y-3 pb-24 bg-slate-50">
+    <div id="questions-list" class="flex-1 overflow-y-auto p-3 space-y-2.5 pb-24 bg-slate-50">
         <div class="flex justify-center mt-10"><div class="loader"></div></div>
     </div>
 
-    <button id="fab-btn" onclick="openModal()" class="absolute bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-xl hover:scale-105 transition z-30">
+    <button id="fab-btn" onclick="openModal()" class="absolute bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl w-14 h-14 flex items-center justify-center shadow-xl shadow-blue-300 hover:scale-105 transition z-30">
         <i class="fa-solid fa-plus text-xl"></i>
     </button>
 
-    <div id="add-modal" class="hidden absolute inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 transition-opacity">
-        <div class="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-xl shadow-2xl overflow-hidden h-[90vh] sm:h-auto flex flex-col">
-            <div class="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center shrink-0">
-                <h3 class="font-bold text-slate-700">New Document</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 bg-white p-1 rounded-full w-8 h-8 shadow-sm"><i class="fa-solid fa-times"></i></button>
+    <div id="add-modal" class="hidden absolute inset-0 z-40 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 transition-opacity">
+        <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden h-[85vh] sm:h-auto flex flex-col">
+            
+            <div class="bg-white px-5 py-4 border-b border-slate-100 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-slate-800">Add New Document</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 bg-slate-50 p-1 rounded-full w-8 h-8"><i class="fa-solid fa-times"></i></button>
             </div>
+
             <form id="qForm" onsubmit="saveQuestion(event)" class="p-5 flex-1 overflow-y-auto flex flex-col">
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Document Name</label>
-                    <input type="text" id="qText" required placeholder="e.g. Income Certificate" class="w-full text-sm p-3 border border-slate-200 bg-slate-50 rounded-lg focus:border-blue-500 outline-none transition">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Document Title</label>
+                    <input type="text" id="qText" required placeholder="Ex: Bank KYC" class="w-full text-sm p-3.5 border border-slate-200 bg-slate-50 rounded-xl focus:border-blue-500 focus:bg-white outline-none transition font-medium">
                 </div>
+
                 <div class="flex-1 flex flex-col min-h-0">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Steps (Tap to Select)</label>
+                    <div class="flex justify-between items-end mb-2">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Manage Steps</label>
+                        <span class="text-[10px] text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">Tap arrows to sort</span>
+                    </div>
+                    
                     <div class="flex space-x-2 mb-3 shrink-0">
-                        <input type="text" id="newGlobalStepInput" placeholder="Create new step type..." class="flex-1 text-sm p-2.5 border border-slate-200 rounded-lg outline-none focus:border-blue-500" onkeypress="handleGlobalEnter(event)">
-                        <button type="button" onclick="addNewGlobalStep()" class="bg-slate-800 hover:bg-black text-white px-4 rounded-lg shadow-md transition"><i class="fa-solid fa-plus"></i></button>
+                        <input type="text" id="newGlobalStepInput" placeholder="Add custom step..." 
+                            class="flex-1 text-sm p-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 bg-slate-50"
+                            onkeypress="handleGlobalEnter(event)">
+                        <button type="button" onclick="addNewGlobalStep()" class="bg-slate-800 hover:bg-black text-white px-4 rounded-xl shadow-md transition">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                     </div>
-                    <div id="step-pool-list" class="space-y-2 overflow-y-auto pr-1 pb-2 flex-1">
-                        <div class="text-center text-xs text-slate-400 mt-4">Loading steps...</div>
-                    </div>
+
+                    <div id="step-pool-list" class="space-y-2 overflow-y-auto pr-1 pb-2 flex-1"></div>
                 </div>
+
                 <div class="mt-4 pt-3 border-t border-slate-100 shrink-0">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 transition active:scale-95">Create Checklist</button>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 transition active:scale-95 flex items-center justify-center">
+                        <i class="fa-solid fa-check mr-2"></i> Create Checklist
+                    </button>
                 </div>
             </form>
         </div>
@@ -165,85 +197,61 @@
         const db = firebase.database();
         
         let currentUser = null;
-        let questionsData = [];
         let isEditMode = false;
         let globalStepPool = [];
         let selectedPoolIndices = [];
+        let currentQuestionsData = []; // Store local data for easier access
 
-        document.getElementById('print-date').innerText = "Generated on: " + new Date().toLocaleString();
+        document.getElementById('print-date').innerText = "Date: " + new Date().toLocaleDateString();
 
-        // --- AUTH LOGIC (EMAIL/PASSWORD) ---
-        
-        // 1. Auto-redirect if logged in
         auth.onAuthStateChanged(user => {
             const loginScreen = document.getElementById('login-screen');
             if (user) {
                 currentUser = user;
-                loginScreen.classList.add('hidden'); // Hide login immediately
+                loginScreen.classList.add('hidden');
                 loadQuestions();
                 loadGlobalStepPool();
             } else {
-                loginScreen.classList.remove('hidden'); // Show login
-                document.getElementById('questions-list').innerHTML = '<div class="flex justify-center mt-10"><div class="loader"></div></div>';
+                loginScreen.classList.remove('hidden');
             }
         });
 
-        // 2. Login Function
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('login-error');
-
-            auth.signInWithEmailAndPassword(email, password)
-                .catch(error => {
-                    errorEl.innerText = error.message.replace('Firebase: ', '');
-                    errorEl.classList.remove('hidden');
-                });
-        }
-
-        // 3. Register Function
-        function handleRegister() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('login-error');
-
-            if(!email || !password) {
-                errorEl.innerText = "Please enter email & password to register.";
-                errorEl.classList.remove('hidden');
-                return;
-            }
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(() => {
-                    alert("Account created successfully! Logging in...");
-                })
-                .catch(error => {
-                    errorEl.innerText = error.message.replace('Firebase: ', '');
-                    errorEl.classList.remove('hidden');
-                });
+        function googleLogin() {
+            const errorMsg = document.getElementById('login-error');
+            errorMsg.classList.add('hidden');
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch((error) => {
+                errorMsg.innerText = "Error: " + error.message;
+                errorMsg.classList.remove('hidden');
+            });
         }
 
         function logout() { auth.signOut(); }
 
-
-        // --- UI & FEATURES ---
         function toggleEditMode() {
             isEditMode = !isEditMode;
             const body = document.body;
-            const status = document.getElementById('edit-status');
+            const statsDiv = document.getElementById('header-stats');
+            
+            // Re-render list to toggle between check view and edit view
+            renderList(currentQuestionsData); 
+
             if (isEditMode) {
                 body.classList.add('app-editing');
-                status.innerText = "Editing Active (Tap to Stop)";
-                status.classList.add('text-blue-600', 'font-bold');
+                statsDiv.innerHTML = `<span class="text-blue-600 font-bold animate-pulse">EDIT MODE ACTIVE</span>`;
+                // Open all accordions in edit mode for easier access
+                document.querySelectorAll('.step-body').forEach(el => {
+                    el.classList.add('open');
+                    // Find previous elements to rotate chevron
+                    const header = el.previousElementSibling.previousElementSibling;
+                    if(header) header.querySelector('.chevron').classList.add('rotate');
+                });
             } else {
                 body.classList.remove('app-editing');
-                status.innerText = "Tap here to Edit";
-                status.classList.remove('text-blue-600', 'font-bold');
+                loadQuestions(); // Reset stats text
             }
         }
 
-        // --- Modal & Steps ---
         function openModal() { 
             document.getElementById('add-modal').classList.remove('hidden'); 
             selectedPoolIndices = []; 
@@ -256,114 +264,352 @@
             if(!currentUser) return;
             db.ref('user_settings/' + currentUser.uid + '/steps').on('value', snapshot => {
                 const data = snapshot.val();
-                globalStepPool = (data && Array.isArray(data)) ? data : ['Print', 'Fill Form', 'Photo', 'Sign', 'Photocopy', 'Upload'];
+                globalStepPool = (data && Array.isArray(data)) ? data : ['Print', 'Fill Form', 'Photo', 'Sign', 'Photocopy', 'Attach ID', 'Submit'];
                 renderStepPool();
             });
         }
-        function saveGlobalPool() { if(!currentUser) return; db.ref('user_settings/' + currentUser.uid + '/steps').set(globalStepPool); }
+
+        function saveGlobalPool() {
+            if(!currentUser) return;
+            db.ref('user_settings/' + currentUser.uid + '/steps').set(globalStepPool);
+        }
 
         function renderStepPool() {
             const list = document.getElementById('step-pool-list');
             list.innerHTML = '';
+            
             globalStepPool.forEach((stepName, idx) => {
                 const isSelected = selectedPoolIndices.includes(idx);
-                const bgClass = isSelected ? 'bg-green-100 border-green-300 shadow-sm' : 'bg-slate-50 border-slate-200';
-                const textClass = isSelected ? 'text-green-800 font-bold' : 'text-slate-600 font-medium';
-                const iconCheck = isSelected ? '<i class="fa-solid fa-circle-check text-green-500 ml-2"></i>' : '';
+                const bgClass = isSelected ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-100';
+                const textClass = isSelected ? 'text-blue-700 font-bold' : 'text-slate-600';
+                const iconCheck = isSelected ? '<i class="fa-solid fa-circle-check text-blue-500"></i>' : '<i class="fa-regular fa-circle text-slate-300"></i>';
+                const isFirst = idx === 0;
+                const isLast = idx === globalStepPool.length - 1;
+
                 list.innerHTML += `
-                    <div class="flex items-center ${bgClass} p-2 rounded-lg border transition-all duration-200 group cursor-pointer select-none" onclick="togglePoolStep(${idx})">
-                        <span class="text-xs font-bold text-slate-400 w-6 text-center">${idx+1}.</span>
-                        <span class="text-xs ${textClass} flex-1 flex items-center">${stepName} ${iconCheck}</span>
-                        <div class="flex space-x-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation()">
-                            <button type="button" onclick="moveGlobalStep(${idx}, -1)" class="text-slate-400 hover:text-blue-600 p-1 w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>
-                            <button type="button" onclick="moveGlobalStep(${idx}, 1)" class="text-slate-400 hover:text-blue-600 p-1 w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm"><i class="fa-solid fa-arrow-down text-[10px]"></i></button>
-                            <button type="button" onclick="deleteGlobalStep(${idx})" class="text-slate-300 hover:text-red-500 p-1 w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm ml-1"><i class="fa-solid fa-times text-[10px]"></i></button>
+                    <div class="flex items-center ${bgClass} p-2 rounded-xl border mb-1 transition group">
+                        <div class="flex-1 flex items-center cursor-pointer select-none p-1" onclick="togglePoolStep(${idx})">
+                            <span class="mr-3 text-lg">${iconCheck}</span>
+                            <span class="text-sm ${textClass}">${stepName}</span>
                         </div>
-                    </div>`;
+                        <div class="flex items-center space-x-1 pl-2 border-l border-slate-200 ml-1">
+                            ${!isFirst ? `<button type="button" onclick="moveGlobalStep(${idx}, -1)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>` : '<div class="w-7 h-7"></div>'}
+                            ${!isLast ? `<button type="button" onclick="moveGlobalStep(${idx}, 1)" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600"><i class="fa-solid fa-arrow-down text-[10px]"></i></button>` : '<div class="w-7 h-7"></div>'}
+                            <button type="button" onclick="deleteGlobalStep(${idx})" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500"><i class="fa-solid fa-times text-xs"></i></button>
+                        </div>
+                    </div>
+                `;
             });
         }
+
         function togglePoolStep(idx) {
             if (selectedPoolIndices.includes(idx)) selectedPoolIndices = selectedPoolIndices.filter(i => i !== idx);
             else selectedPoolIndices.push(idx);
             renderStepPool();
         }
+
+        function moveGlobalStep(index, direction) {
+            if (direction === -1 && index > 0) {
+                [globalStepPool[index], globalStepPool[index - 1]] = [globalStepPool[index - 1], globalStepPool[index]];
+                let newSelection = selectedPoolIndices.map(i => {
+                    if (i === index) return index - 1;
+                    if (i === index - 1) return index;
+                    return i;
+                });
+                selectedPoolIndices = newSelection;
+
+            } else if (direction === 1 && index < globalStepPool.length - 1) {
+                [globalStepPool[index], globalStepPool[index + 1]] = [globalStepPool[index + 1], globalStepPool[index]];
+                let newSelection = selectedPoolIndices.map(i => {
+                    if (i === index) return index + 1;
+                    if (i === index + 1) return index;
+                    return i;
+                });
+                selectedPoolIndices = newSelection;
+            }
+            saveGlobalPool();
+            renderStepPool();
+        }
+
         function handleGlobalEnter(e) { if(e.key === 'Enter') { e.preventDefault(); addNewGlobalStep(); } }
         function addNewGlobalStep() {
             const input = document.getElementById('newGlobalStepInput');
             const val = input.value.trim();
-            if(val) { globalStepPool.push(val); selectedPoolIndices.push(globalStepPool.length - 1); saveGlobalPool(); input.value = ''; input.focus(); }
+            if(val) {
+                globalStepPool.push(val);
+                selectedPoolIndices.push(globalStepPool.length - 1);
+                saveGlobalPool();
+                input.value = ''; input.focus();
+            }
         }
-        function deleteGlobalStep(idx) { if(confirm('Remove this step?')) { globalStepPool.splice(idx, 1); selectedPoolIndices = selectedPoolIndices.filter(i => i < idx); saveGlobalPool(); } }
-        function moveGlobalStep(index, direction) {
-            if (direction === -1 && index > 0) [globalStepPool[index], globalStepPool[index - 1]] = [globalStepPool[index - 1], globalStepPool[index]];
-            else if (direction === 1 && index < globalStepPool.length - 1) [globalStepPool[index], globalStepPool[index + 1]] = [globalStepPool[index + 1], globalStepPool[index]];
-            selectedPoolIndices = []; saveGlobalPool();
+        function deleteGlobalStep(idx) {
+            if(confirm('Remove this step from list?')) {
+                globalStepPool.splice(idx, 1);
+                selectedPoolIndices = selectedPoolIndices.filter(i => i < idx).map(i => i);
+                saveGlobalPool();
+            }
         }
 
-        // --- Save Data ---
         function saveQuestion(e) {
             e.preventDefault();
             const text = document.getElementById('qText').value;
             const finalSteps = [];
-            globalStepPool.forEach((stepName, idx) => { if(selectedPoolIndices.includes(idx)) finalSteps.push({ name: stepName, done: false }); });
-            if(finalSteps.length === 0) { alert("Select at least one step!"); return; }
-            db.ref('questions').push({ text: text, steps: finalSteps, uid: currentUser.uid, orderId: Date.now() * -1, ts: firebase.database.ServerValue.TIMESTAMP });
+            globalStepPool.forEach((stepName, idx) => {
+                if(selectedPoolIndices.includes(idx)) finalSteps.push({ name: stepName, done: false });
+            });
+
+            if(finalSteps.length === 0) { alert("Please select at least one step!"); return; }
+            
+            db.ref('questions').push({
+                text: text, steps: finalSteps, uid: currentUser.uid,
+                orderId: Date.now() * -1, ts: firebase.database.ServerValue.TIMESTAMP
+            });
+
             e.target.reset(); closeModal();
         }
 
-        // --- Render List ---
         function loadQuestions() {
             db.ref('questions').on('value', snapshot => {
                 const list = document.getElementById('questions-list');
                 const data = snapshot.val();
-                if (!data) { list.innerHTML = '<div class="text-center text-slate-400 text-xs mt-10">No documents found. Click + to add.</div>'; document.getElementById('total-count').innerText = `0 Docs`; return; }
+                
+                if (!data) {
+                    list.innerHTML = `
+                        <div class="flex flex-col items-center justify-center mt-20 opacity-50">
+                            <i class="fa-regular fa-folder-open text-4xl text-slate-300 mb-2"></i>
+                            <p class="text-sm text-slate-400">No documents yet.</p>
+                        </div>`;
+                    updateHeaderStats(0, 0);
+                    currentQuestionsData = [];
+                    return;
+                }
+
                 let arr = Object.entries(data).map(([k,v]) => ({id:k, ...v}));
-                const updates = {}; let needsFix = false;
-                arr.forEach(item => { if (item.orderId === undefined || item.orderId === null) { updates[`questions/${item.id}/orderId`] = item.ts ? -item.ts : -Date.now(); needsFix = true; } });
+                
+                const updates = {};
+                let needsFix = false;
+                arr.forEach(item => {
+                    if (item.orderId === undefined || item.orderId === null) {
+                        updates[`questions/${item.id}/orderId`] = item.ts ? -item.ts : -Date.now();
+                        needsFix = true;
+                    }
+                });
                 if (needsFix) { db.ref().update(updates); return; }
+
                 arr.sort((a,b) => a.orderId - b.orderId);
-                document.getElementById('total-count').innerText = `${arr.length} Docs`;
+                currentQuestionsData = arr; // save for local use
+                
+                const total = arr.length;
+                const completed = arr.filter(q => q.steps && q.steps.every(s => s.done)).length;
+                updateHeaderStats(total, completed);
+
                 renderList(arr);
             });
+        }
+
+        function updateHeaderStats(total, completed) {
+            if(isEditMode) return;
+            const pending = total - completed;
+            document.getElementById('header-stats').innerHTML = `
+                <span class="text-slate-600 font-bold">${total}</span> Total
+                <span class="mx-1 text-slate-300">|</span>
+                <span class="text-green-600 font-bold">${completed}</span> Done
+                <span class="mx-1 text-slate-300">|</span>
+                <span class="text-orange-500 font-bold">${pending}</span> Left
+            `;
         }
 
         function renderList(data) {
             const list = document.getElementById('questions-list');
             list.innerHTML = '';
+
             data.forEach((q, index) => {
-                let stepsHtml = ''; let allDone = true; let totalSteps = 0; let completedSteps = 0;
+                let stepsHtmlCheck = '';
+                let stepsHtmlEdit = '';
+                
+                let allDone = true;
+                let totalSteps = 0;
+                let completedSteps = 0;
+                let nextStepName = "Completed";
+                let nextStepFound = false;
+                
                 if (q.steps) {
                     totalSteps = q.steps.length;
-                    stepsHtml = `<div class="grid grid-cols-2 gap-2">`;
+                    
+                    // --- NORMAL VIEW (Checkboxes) ---
+                    stepsHtmlCheck = `<div class="grid grid-cols-2 gap-2 mt-1 step-check-view">`;
                     q.steps.forEach((step, sIdx) => {
-                        if (!step.done) allDone = false; else completedSteps++;
+                        if (!step.done) {
+                            allDone = false;
+                            if(!nextStepFound) { nextStepName = step.name; nextStepFound = true; }
+                        } else {
+                            completedSteps++;
+                        }
+                        
                         const isChecked = step.done ? 'checked' : '';
                         const strike = step.done ? 'line-through text-slate-400' : 'text-slate-700';
-                        const bg = step.done ? 'bg-green-50 border-green-200' : 'bg-white border-slate-200';
-                        stepsHtml += `<label class="flex items-center p-2 rounded border ${bg} cursor-pointer transition select-none hover:shadow-sm" onclick="event.stopPropagation()"><input type="checkbox" ${isChecked} onchange="toggleStep('${q.id}', ${sIdx}, this.checked)" class="w-4 h-4 accent-green-600 rounded"><span class="ml-2 text-[11px] font-medium ${strike}">${step.name}</span></label>`;
+                        const bg = step.done ? 'bg-green-50 border-green-100' : 'bg-slate-50 border-slate-200';
+
+                        stepsHtmlCheck += `
+                        <label class="flex items-center p-2 rounded-lg border ${bg} cursor-pointer transition select-none active:scale-[0.98]" onclick="event.stopPropagation()">
+                            <input type="checkbox" ${isChecked} onchange="toggleStep('${q.id}', ${sIdx}, this.checked)" class="w-4 h-4 accent-green-600 rounded">
+                            <span class="ml-2 text-[11px] font-medium ${strike} truncate">${step.name}</span>
+                        </label>`;
                     });
-                    stepsHtml += `</div>`;
+                    stepsHtmlCheck += `</div>`;
+
+                    // --- EDIT VIEW (Reorder/Delete) ---
+                    stepsHtmlEdit = `<div class="step-edit-view space-y-2 mt-2">`;
+                    q.steps.forEach((step, sIdx) => {
+                        const isFirstStep = sIdx === 0;
+                        const isLastStep = sIdx === q.steps.length - 1;
+                        stepsHtmlEdit += `
+                            <div class="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-lg shadow-sm">
+                                <span class="text-xs font-bold text-slate-700 ml-1 truncate">${sIdx+1}. ${step.name}</span>
+                                <div class="flex space-x-1 shrink-0">
+                                    ${!isFirstStep ? `<button onclick="moveCardStep('${q.id}', ${sIdx}, -1)" class="w-7 h-7 bg-slate-100 rounded hover:bg-blue-100 text-slate-500"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>` : '<div class="w-7"></div>'}
+                                    ${!isLastStep ? `<button onclick="moveCardStep('${q.id}', ${sIdx}, 1)" class="w-7 h-7 bg-slate-100 rounded hover:bg-blue-100 text-slate-500"><i class="fa-solid fa-arrow-down text-[10px]"></i></button>` : '<div class="w-7"></div>'}
+                                    <button onclick="deleteCardStep('${q.id}', ${sIdx})" class="w-7 h-7 bg-red-50 rounded hover:bg-red-100 text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    // Add New Step Button inside Edit View
+                    stepsHtmlEdit += `
+                        <button onclick="addStepToCard('${q.id}')" class="w-full mt-3 py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 text-xs font-bold hover:bg-slate-50 hover:border-blue-400 hover:text-blue-500 transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add New Step
+                        </button>
+                    </div>`;
+                } else {
+                     // Empty state handling for edit mode
+                     stepsHtmlEdit = `
+                     <div class="step-edit-view mt-2">
+                        <button onclick="addStepToCard('${q.id}')" class="w-full py-2 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 text-xs font-bold hover:bg-slate-50 hover:border-blue-400 hover:text-blue-500 transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Add First Step
+                        </button>
+                     </div>`;
                 }
-                const cardClass = allDone ? 'bg-green-50 border-green-400' : 'bg-white border-slate-200';
-                const icon = allDone ? '<i class="fa-solid fa-circle-check text-green-500 text-lg"></i>' : `<div class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full">${completedSteps}/${totalSteps}</div>`;
-                const isFirst = index === 0; const isLast = index === data.length - 1;
-                const editControls = `<div class="edit-controls absolute -right-2 -top-2 flex flex-col space-y-1 bg-white p-1 rounded-lg shadow-md border border-slate-200 z-10">${!isFirst ? `<button onclick="moveCard('${q.id}', '${data[index-1].id}', ${q.orderId}, ${data[index-1].orderId}, event)" class="w-8 h-8 bg-slate-100 hover:bg-blue-100 text-slate-600 rounded flex items-center justify-center"><i class="fa-solid fa-arrow-up"></i></button>` : ''}${!isLast ? `<button onclick="moveCard('${q.id}', '${data[index+1].id}', ${q.orderId}, ${data[index+1].orderId}, event)" class="w-8 h-8 bg-slate-100 hover:bg-blue-100 text-slate-600 rounded flex items-center justify-center"><i class="fa-solid fa-arrow-down"></i></button>` : ''}<button onclick="doubleConfirmDelete('${q.id}', event)" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-500 rounded flex items-center justify-center"><i class="fa-solid fa-trash"></i></button></div>`;
-                const card = `<div class="q-card ${cardClass} p-0 rounded-xl border shadow-sm relative transition-all duration-300 mb-3 overflow-hidden">${editControls}<div class="card-main-click relative p-4 pb-5 flex items-center justify-between cursor-pointer" onclick="toggleAccordion(this)"><div class="flex items-start gap-3 flex-1"><div class="w-5 h-5 flex items-center justify-center text-slate-400 mt-0.5 shrink-0"><i class="fa-solid fa-chevron-right text-xs chevron transition-transform duration-300"></i></div><h3 class="font-bold text-sm text-slate-800 leading-snug break-words">${q.text}</h3></div><div class="shrink-0 ml-2">${icon}</div><div class="absolute bottom-0 left-0 w-full h-1.5 bg-slate-100"><div class="h-full ${allDone ? 'bg-green-500' : 'bg-blue-500'} transition-all duration-500" style="width: ${(completedSteps/totalSteps)*100}%"></div></div></div><div class="step-body px-4 pb-4">${stepsHtml}</div></div>`;
+
+                const progressPercent = totalSteps > 0 ? (completedSteps/totalSteps)*100 : 0;
+                const cardClass = allDone ? 'bg-white border-green-200 shadow-sm shadow-green-100' : 'bg-white border-slate-200 shadow-sm';
+                
+                const pillColor = allDone ? 'bg-green-100 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-100';
+                const pillIcon = allDone ? '<i class="fa-solid fa-check mr-1"></i>' : '<i class="fa-solid fa-arrow-right mr-1 opacity-50"></i>';
+                const pillHTML = `
+                    <div class="pill-badge flex items-center px-2.5 py-1 rounded-full border ${pillColor} text-[10px] font-bold uppercase tracking-wide shrink-0 ml-2">
+                        ${pillIcon} ${nextStepName}
+                    </div>
+                `;
+                
+                const printStatus = `
+                    <div class="print-status text-right">
+                        ${allDone ? '<span style="color:green;">[COMPLETED]</span>' : `<span style="color:black;">[PENDING: ${completedSteps}/${totalSteps}]</span>`}
+                    </div>
+                `;
+
+                // Global Card Edit Controls
+                const isFirst = index === 0;
+                const isLast = index === data.length - 1;
+                const editControls = `
+                    <div class="edit-controls absolute inset-y-0 right-0 w-24 flex items-center justify-center space-x-1 pr-2 z-20 pointer-events-auto">
+                         ${!isFirst ? `<button onclick="moveCard('${q.id}', '${data[index-1].id}', ${q.orderId}, ${data[index-1].orderId}, event)" class="glass-btn w-8 h-8 rounded-full text-slate-700 shadow-sm"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+                         ${!isLast ? `<button onclick="moveCard('${q.id}', '${data[index+1].id}', ${q.orderId}, ${data[index+1].orderId}, event)" class="glass-btn w-8 h-8 rounded-full text-slate-700 shadow-sm"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+                         <button onclick="doubleConfirmDelete('${q.id}', event)" class="glass-btn w-8 h-8 rounded-full text-red-600 shadow-sm bg-red-50"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                const card = `
+                    <div class="q-card ${cardClass} rounded-2xl border relative transition-all duration-300 overflow-hidden group">
+                        ${editControls}
+                        <div class="card-main-click relative px-4 py-3.5 flex items-center justify-between cursor-pointer" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-3 flex-1 min-w-0">
+                                <div class="w-6 h-6 flex items-center justify-center bg-slate-50 rounded-full border border-slate-100 text-slate-400 shrink-0">
+                                    <i class="fa-solid fa-chevron-right text-[10px] chevron transition-transform duration-300"></i>
+                                </div>
+                                <h3 class="font-bold text-[13px] text-slate-700 leading-snug whitespace-normal break-words">${q.text}</h3>
+                            </div>
+                            ${pillHTML}
+                            ${printStatus}
+                        </div>
+                        
+                        <div class="px-2 pb-1.5 opacity-100 transition-opacity duration-300">
+                            <div class="h-1 bg-slate-100 w-full rounded-full overflow-hidden">
+                                <div class="h-full ${allDone ? 'bg-green-500' : 'bg-blue-500'} transition-all duration-500 rounded-full" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="step-body px-3 pb-3 ${isEditMode ? 'open' : ''}">
+                            ${stepsHtmlCheck}
+                            ${stepsHtmlEdit}
+                        </div>
+                    </div>
+                `;
                 list.innerHTML += card;
             });
         }
 
-        // --- Actions ---
         function toggleAccordion(header) {
-            const body = header.nextElementSibling; const icon = header.querySelector('.chevron');
-            if (body.classList.contains('open')) { body.classList.remove('open'); icon.classList.remove('rotate'); } else { body.classList.add('open'); icon.classList.add('rotate'); }
+            if(isEditMode) return; // Disable accordion toggle in edit mode (keep open)
+            const body = header.nextElementSibling.nextElementSibling;
+            const icon = header.querySelector('.chevron');
+            const allBodies = document.querySelectorAll('.step-body.open');
+            
+            allBodies.forEach(b => { if(b !== body) { b.classList.remove('open'); b.previousElementSibling.previousElementSibling.querySelector('.chevron').classList.remove('rotate'); }});
+
+            if (body.classList.contains('open')) { body.classList.remove('open'); icon.classList.remove('rotate'); } 
+            else { body.classList.add('open'); icon.classList.add('rotate'); }
         }
+
         function toggleStep(qId, stepIndex, status) { db.ref(`questions/${qId}/steps/${stepIndex}`).update({ done: status }); }
-        function doubleConfirmDelete(id, e) { e.stopPropagation(); if(confirm("Delete this document?")) { if(confirm("⚠️ Final Warning: Cannot be undone.")) db.ref('questions').child(id).remove(); } }
+        
+        // --- NEW FUNCTIONS FOR INTERNAL STEP EDITING ---
+        function moveCardStep(qId, idx, dir) {
+            db.ref(`questions/${qId}/steps`).get().then(snap => {
+                let steps = snap.val() || [];
+                if (dir === -1 && idx > 0) {
+                    [steps[idx], steps[idx - 1]] = [steps[idx - 1], steps[idx]];
+                } else if (dir === 1 && idx < steps.length - 1) {
+                    [steps[idx], steps[idx + 1]] = [steps[idx + 1], steps[idx]];
+                }
+                db.ref(`questions/${qId}/steps`).set(steps);
+            });
+        }
+
+        function deleteCardStep(qId, idx) {
+            if(confirm('Delete this step?')) {
+                db.ref(`questions/${qId}/steps`).get().then(snap => {
+                    let steps = snap.val() || [];
+                    steps.splice(idx, 1);
+                    db.ref(`questions/${qId}/steps`).set(steps);
+                });
+            }
+        }
+
+        function addStepToCard(qId) {
+            const name = prompt("Enter new step name:");
+            if(name && name.trim() !== "") {
+                db.ref(`questions/${qId}/steps`).get().then(snap => {
+                    let steps = snap.val() || [];
+                    steps.push({ name: name.trim(), done: false });
+                    db.ref(`questions/${qId}/steps`).set(steps);
+                });
+            }
+        }
+
+        function doubleConfirmDelete(id, e) {
+            e.stopPropagation();
+            if(confirm("Delete this document?")) {
+                db.ref('questions').child(id).remove();
+            }
+        }
+        
         function moveCard(id1, id2, order1, order2, e) {
             if(e) e.stopPropagation();
             if (order1 === order2 || !order1 || !order2) { order1 = -Date.now(); order2 = order1 - 1000; }
-            const updates = {}; updates[`questions/${id1}/orderId`] = order2; updates[`questions/${id2}/orderId`] = order1; db.ref().update(updates);
+            const updates = {};
+            updates[`questions/${id1}/orderId`] = order2;
+            updates[`questions/${id2}/orderId`] = order1;
+            db.ref().update(updates);
         }
     </script>
 </body>
